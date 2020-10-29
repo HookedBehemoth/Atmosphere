@@ -39,6 +39,7 @@
 #include <vapours/results/lr_results.hpp>
 #include <vapours/results/ncm_results.hpp>
 #include <vapours/results/nim_results.hpp>
+#include <vapours/results/npns_results.hpp>
 #include <vapours/results/ns_results.hpp>
 #include <vapours/results/os_results.hpp>
 #include <vapours/results/pgl_results.hpp>

@@ -67,6 +67,16 @@ namespace ams::impl {
     /* boot2. */
     AMS_DEFINE_SYSTEM_THREAD(20, boot2, Main);
 
+    /* bcat. */
+    AMS_DEFINE_SYSTEM_THREAD(33, bcat, Main);
+    AMS_DEFINE_SYSTEM_THREAD(33, bcat, NaCacheUpdater);
+    AMS_DEFINE_SYSTEM_THREAD(33, bcat, NotificationReceiver);
+    AMS_DEFINE_SYSTEM_THREAD(33, news, IpcServer);
+    AMS_DEFINE_SYSTEM_THREAD(33, news, Downloader);
+    AMS_DEFINE_SYSTEM_THREAD(33, prepo, IpcServer);
+    AMS_DEFINE_SYSTEM_THREAD(33, prepo, Uploader);
+    AMS_DEFINE_SYSTEM_THREAD(33, prepo, Flush);
+
     /* dmnt. */
     AMS_DEFINE_SYSTEM_THREAD(-3, dmnt, MultiCoreEventManager);
     AMS_DEFINE_SYSTEM_THREAD(-1, dmnt, CheatDebugEvents);
@@ -75,6 +85,13 @@ namespace ams::impl {
     AMS_DEFINE_SYSTEM_THREAD(11, dmnt, Ipc);
     AMS_DEFINE_SYSTEM_THREAD(11, dmnt, CheatDetect);
     AMS_DEFINE_SYSTEM_THREAD(20, dmnt, CheatVirtualMachine);
+
+    /* npns. */
+    AMS_DEFINE_SYSTEM_THREAD(33, npns, Client);
+    AMS_DEFINE_SYSTEM_THREAD(33, npns, StateMachine);
+    AMS_DEFINE_SYSTEM_THREAD(33, npns, SystemEventHandler);
+    AMS_DEFINE_SYSTEM_THREAD(33, npns, DeferredWorker);
+    AMS_DEFINE_SYSTEM_THREAD(33, npns, Main);
 
     /* fatal */
     AMS_DEFINE_SYSTEM_THREAD(-13, fatal, Main);
