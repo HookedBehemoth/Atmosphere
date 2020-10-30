@@ -136,7 +136,7 @@ namespace ams::profiler {
                 
                 g_banana_state = BananaState::Running;
                 g_banana_wait_span.FromNanoSeconds(timespan);
-                R_ABORT_UNLESS(os::CreateThread(&g_banana_thread, [](void*) {}, nullptr, g_banana_stack, sizeof(g_banana_stack), -2, 3));
+                R_ABORT_UNLESS(os::CreateThread(&g_banana_thread, ThreadFunc, nullptr, g_banana_stack, sizeof(g_banana_stack), -2, 3));
                 os::StartThread(&g_banana_thread);
 
                 return ResultSuccess();
