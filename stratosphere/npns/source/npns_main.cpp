@@ -20,6 +20,7 @@ extern "C" {
     extern u32 __start__;
 
     u32 __nx_applet_type = AppletType_None;
+    u32 __nx_fs_num_sessions = 2;
 
     #define INNER_HEAP_SIZE 589824
     size_t nx_inner_heap_size = INNER_HEAP_SIZE;
@@ -49,6 +50,25 @@ namespace ams {
 
 using namespace ams;
 
+namespace {
+
+    u8 g_heap_memory[580_KB];
+    lmem::HeapHandle g_heap_handle;
+
+    void *Allocate(size_t size) {
+        return lmem::AllocateFromExpHeap(g_heap_handle, size);
+    }
+
+    void Deallocate(void *p, size_t size) {
+        lmem::FreeToExpHeap(g_heap_handle, p);
+    }
+
+    void InitializeHeap() {
+        g_heap_handle = lmem::CreateExpHeap(g_heap_memory, sizeof(g_heap_memory), lmem::CreateOption_ThreadSafe | lmem::CreateOption_ZeroClear);
+    }
+
+}
+
 void __libnx_exception_handler(ThreadExceptionDump *ctx) {
     ams::CrashHandler(ctx);
 }
@@ -68,8 +88,11 @@ void __libnx_initheap(void) {
 void __appInit(void) {
     hos::InitializeForStratosphere();
 
+    fs::SetAllocator(Allocate, Deallocate);
+
     /* Curl requires an sm session for sfdnsres, so we'll keep it. */
     R_ABORT_UNLESS(smInitialize());
+    R_ABORT_UNLESS(fsInitialize());
     R_ABORT_UNLESS(nifmInitialize(NifmServiceType_System));
     R_ABORT_UNLESS(socketInitialize(&npns::g_SocketConfig));
     AMS_ABORT_UNLESS(curl_global_init(CURL_GLOBAL_ALL) == CURLE_OK);
@@ -83,7 +106,32 @@ void __appExit(void) {
     curl_global_cleanup();
     socketExit();
     nifmExit();
+    fsExit();
     smExit();
+}
+
+void *operator new(size_t size) {
+    return Allocate(size);
+}
+
+void *operator new(size_t size, const std::nothrow_t &) {
+    return Allocate(size);
+}
+
+void operator delete(void *p) {
+    return Deallocate(p, 0);
+}
+
+void *operator new[](size_t size) {
+    return Allocate(size);
+}
+
+void *operator new[](size_t size, const std::nothrow_t &) {
+    return Allocate(size);
+}
+
+void operator delete[](void *p) {
+    return Deallocate(p, 0);
 }
 
 int main(int argc, char **argv) {
